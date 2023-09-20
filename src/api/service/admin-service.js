@@ -119,7 +119,7 @@ const getAllMahasiswa = async () => {
 const updateInactiveMahasiswa = async(nim) => {
     const data = await Mahasiswa.findOne({
         nim: nim
-    }).select("nim biodata")
+    }).select("nim isActive biodata")
 
     if (data === null) {
         throw new ResponseError(404, "Mahasiswa Not Found")
@@ -129,18 +129,23 @@ const updateInactiveMahasiswa = async(nim) => {
         throw new ResponseError(400, "Mahasiswa Sudah Tidak Aktif")
     }
 
-    await data.updateOne({
+    let updateAndShowMahasiswa = await Mahasiswa.updateOne({
         $set: {
             isActive: 0
         }
     })
-    return data
+
+    updateAndShowMahasiswa = await Mahasiswa.findOne({
+        nim: nim
+    }).select("nim isActive biodata")
+    updateAndShowMahasiswa.isActive = updateAndShowMahasiswa.isActive === 1 ? "Active" : "Inactive"
+    return updateAndShowMahasiswa
 }
 
 const updateActiveMahasiswa = async(nim) => {
     const data = await Mahasiswa.findOne({
         nim: nim
-    }).select("nim biodata")
+    }).select("nim isActive biodata")
 
     if (data === null) {
         throw new ResponseError(404, "Mahasiswa Not Found")
@@ -150,12 +155,17 @@ const updateActiveMahasiswa = async(nim) => {
         throw new ResponseError(400, "Mahasiswa Masih Aktif")
     }
 
-    await data.updateOne({
+    let updateAndShowMahasiswa = await Mahasiswa.updateOne({
         $set: {
             isActive: 1
         }
     })
-    return data
+
+    updateAndShowMahasiswa = await Mahasiswa.findOne({
+        nim: nim
+    }).select("nim isActive biodata")
+    updateAndShowMahasiswa.isActive = updateAndShowMahasiswa.isActive === 1 ? "Active" : "Inactive"
+    return updateAndShowMahasiswa
 }
 
 module.exports = {
