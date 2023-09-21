@@ -20,6 +20,10 @@ const BiodataSchema = new Schema({
 })
 
 const MahasiswaSchema = new Schema({
+    _id: {
+        type: Number,
+        required: true
+    },
     nim: {
         type: String,
         required: true

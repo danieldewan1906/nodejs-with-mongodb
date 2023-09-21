@@ -1,6 +1,6 @@
 const express = require('express');
-const admin = require("./admin/admin")
+const adminAPI = require("./admin")
 const router = express.Router();
-router.use(router())
+router.use(adminAPI())
 
-module.exports = () => admin
+module.exports = () => router

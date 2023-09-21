@@ -95,6 +95,20 @@ const updateActiveMahasiswa = async (req, res, next) => {
     }
 }
 
+const getMahasiswaFilter = async (req, res, next) => {
+    try {
+        const query = req.query;
+        const result = await adminService.getMahasiswaByFilter(query);
+        res.json({
+            status: 200,
+            data: result,
+            message: "OK"
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 module.exports = {
     allAdmin,
     login,
@@ -102,5 +116,6 @@ module.exports = {
     createNewMahasiswa,
     getAllMahasiswa,
     updateInactiveMahasiswa,
-    updateActiveMahasiswa
+    updateActiveMahasiswa,
+    getMahasiswaFilter
 }

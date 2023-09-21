@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const dotenv = require("dotenv");
 const { ResponseError } = require("../utilities/error/ResponseError");
+const Counters = require("../models/counters");
 dotenv.config()
 
 const getAllAdmin = async () => {
@@ -81,6 +82,7 @@ const createMahasiswa = async (request) => {
 
     newRequestMahasiswa.password = await bcrypt.hash(newRequestMahasiswa.password, 10);
     const mahasiswaCreate = new Mahasiswa({
+        _id: await getNextSequenceNumber("idMahasiswa"),
         nim: newRequestMahasiswa.nim,
         password: newRequestMahasiswa.password,
         token: null,
@@ -130,6 +132,8 @@ const updateInactiveMahasiswa = async(nim) => {
     }
 
     let updateAndShowMahasiswa = await Mahasiswa.updateOne({
+        nim: nim
+    }, {
         $set: {
             isActive: 0
         }
@@ -138,7 +142,6 @@ const updateInactiveMahasiswa = async(nim) => {
     updateAndShowMahasiswa = await Mahasiswa.findOne({
         nim: nim
     }).select("nim isActive biodata")
-    updateAndShowMahasiswa.isActive = updateAndShowMahasiswa.isActive === 1 ? "Active" : "Inactive"
     return updateAndShowMahasiswa
 }
 
@@ -156,6 +159,8 @@ const updateActiveMahasiswa = async(nim) => {
     }
 
     let updateAndShowMahasiswa = await Mahasiswa.updateOne({
+        nim: nim
+    }, {
         $set: {
             isActive: 1
         }
@@ -164,8 +169,70 @@ const updateActiveMahasiswa = async(nim) => {
     updateAndShowMahasiswa = await Mahasiswa.findOne({
         nim: nim
     }).select("nim isActive biodata")
-    updateAndShowMahasiswa.isActive = updateAndShowMahasiswa.isActive === 1 ? "Active" : "Inactive"
     return updateAndShowMahasiswa
+}
+
+const getMahasiswaByFilter = async (query) => {
+    if (query.nim === "" && query.firstName === "" && 
+    query.middleName === "" && query.lastName === "") {
+        return await Mahasiswa.find({
+            isActive: 1
+        }).sort({
+            nim: 1
+        }).select("nim isActive biodata");
+    }
+
+    const filterData = await Mahasiswa.find({
+        $or: [
+            {
+                "nim": {
+                    $eq: query.nim === "" ? null : query.nim
+                }
+            },
+            {
+                "biodata.firstName": {
+                    $eq: query.firstName === "" ? null : query.firstName
+                }
+            },
+            {
+                "biodata.middleName": {
+                    $eq: query.middleName === "" ? null : query.middleName
+                }
+            },
+            {
+                "biodata.lastName": {
+                    $eq: query.lastName === "" ? null : query.lastName
+                }
+            }
+        ],
+        isActive: 1
+    }, {
+        sort: {
+            "nim": 1
+        }
+    }).collation({
+        locale: "en",
+        strength: 2
+    }).sort({
+        nim: 1
+    }).select("nim isActive biodata")
+
+    return filterData
+}
+
+const getNextSequenceNumber = async (sequenceName) => {
+    let dataCounter = await Counters.findOneAndUpdate({
+        _id: sequenceName
+    }, {
+        $inc: {
+            sequenceValue: 1
+        }
+    })
+
+    dataCounter = await Counters.findOne({
+        _id: sequenceName
+    })
+    return dataCounter.sequenceValue
 }
 
 module.exports = {
@@ -175,5 +242,6 @@ module.exports = {
     createMahasiswa,
     getAllMahasiswa,
     updateInactiveMahasiswa,
-    updateActiveMahasiswa
+    updateActiveMahasiswa,
+    getMahasiswaByFilter
 }

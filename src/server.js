@@ -7,7 +7,7 @@ const { errorMiddleware } = require("./middleware/errorMiddleware")
 const port = process.env.PORT || 3000
 
 server.use(express.json())
-server.use(route())
+server.use("/api", route())
 server.use(errorMiddleware)
 server.listen(port, () => {
     Connect()

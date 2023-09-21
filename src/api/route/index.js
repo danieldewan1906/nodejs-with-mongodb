@@ -1,6 +1,8 @@
 const express = require('express');
-const api = require("./admin/admin")
+const admin = require("./admin")
+const mahasiswa = require("./mahasiswa")
 const router = express.Router();
-router.use("/api", api())
+router.use(admin())
+router.use(mahasiswa())
 
 module.exports = () => router
