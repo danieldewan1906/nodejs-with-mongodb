@@ -109,11 +109,11 @@ const createMahasiswa = async (request) => {
 }
 
 const getAllMahasiswa = async () => {
-    const data = await Mahasiswa.find({}, null, {
+    let data = await Mahasiswa.find({}, null, {
         sort: {
             nim: 1
         }
-    }).select("nim isActive token biodata")
+    }).select("nim isActive biodata")
     return data
 }
 
