@@ -77,7 +77,7 @@ const createMahasiswa = async (request) => {
     })
 
     if (checkMahasiswa !== null) {
-        throw new ResponseError(400, "Username already exists");
+        throw new ResponseError(400, "Mahasiswa already exists");
     }
 
     newRequestMahasiswa.password = await bcrypt.hash(newRequestMahasiswa.password, 10);
