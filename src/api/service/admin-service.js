@@ -85,7 +85,6 @@ const createMahasiswa = async (request) => {
         _id: await getNextSequenceNumber("idMahasiswa"),
         nim: newRequestMahasiswa.nim,
         password: newRequestMahasiswa.password,
-        token: null,
         biodata: {
             firstName: newRequestMahasiswa.firstName,
             middleName: newRequestMahasiswa.middleName,
@@ -114,7 +113,7 @@ const getAllMahasiswa = async () => {
         sort: {
             nim: 1
         }
-    }).select("nim isActive biodata.firstName biodata.middleName biodata.lastName biodata.address biodata.phoneNumber")
+    }).select("nim isActive token biodata")
     return data
 }
 

@@ -33,7 +33,8 @@ const MahasiswaSchema = new Schema({
         required: true
     },
     token: {
-        type: String
+        type: String,
+        default: null
     },
     isActive: {
         type: Number,
